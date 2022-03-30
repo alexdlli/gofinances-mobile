@@ -14,6 +14,7 @@ import {
   User,
   UserGreeting,
   UserName,
+  LogoutButton,
   Icon,
   HighlightCards,
   Transactions,
@@ -60,6 +61,39 @@ export function Dashboard() {
       },
       date: '05/03/2022',
     },
+    {
+      id: '4',
+      type: 'negative',
+      title: 'Aluguel do Apartamento',
+      amount: 'R$ 1.200,00',
+      category: {
+        name: 'Casa',
+        icon: 'shopping-bag',
+      },
+      date: '05/03/2022',
+    },
+    {
+      id: '5',
+      type: 'positive',
+      title: 'Aluguel da Bike',
+      amount: 'R$ 900,00',
+      category: {
+        name: 'Casa',
+        icon: 'shopping-bag',
+      },
+      date: '05/03/2022',
+    },
+    {
+      id: '6',
+      type: 'negative',
+      title: 'Aluguel do Apartamento',
+      amount: 'R$ 1.200,00',
+      category: {
+        name: 'Casa',
+        icon: 'shopping-bag',
+      },
+      date: '05/03/2022',
+    },
   ];
 
   return (
@@ -78,7 +112,9 @@ export function Dashboard() {
             </User>
           </UserInfo>
 
-          <Icon name='power' />
+          <LogoutButton onPress={() => {}}>
+            <Icon name='power' />
+          </LogoutButton>
         </UserWrapper>
       </Header>
 
