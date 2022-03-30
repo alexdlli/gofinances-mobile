@@ -30,8 +30,7 @@ const scheme = Yup.object().shape({
   name: Yup.string().required('Nome é obrigatório'),
   amount: Yup.number()
     .typeError('Informe um valor numerico')
-    .positive('O valor não pode ser negativo')
-    .required('O valor é obrigatório'),
+    .positive('O valor não pode ser negativo'),
 });
 
 export function Register() {
@@ -75,8 +74,6 @@ export function Register() {
       transactionType,
       category: category.key,
     };
-
-    console.log(data);
   }
 
   return (
