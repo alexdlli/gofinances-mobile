@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { HighlightCard } from '../../components/HighlightCard';
 import {
   TransactionCard,
@@ -27,75 +29,44 @@ export interface DataListProps extends TransactionCardProps {
 }
 
 export function Dashboard() {
-  const data: DataListProps[] = [
-    {
-      id: '1',
-      type: 'positive',
-      title: 'Desenvolvimento de Sites',
-      amount: 'R$ 12.000,00',
-      category: {
-        name: 'Vendas',
-        icon: 'dollar-sign',
-      },
-      date: '29/03/2022',
-    },
-    {
-      id: '2',
-      type: 'negative',
-      title: 'Hamburger Pix',
-      amount: 'R$ 59,00',
-      category: {
-        name: 'Alimentação',
-        icon: 'coffee',
-      },
-      date: '10/03/2022',
-    },
-    {
-      id: '3',
-      type: 'negative',
-      title: 'Aluguel do Apartamento',
-      amount: 'R$ 1.200,00',
-      category: {
-        name: 'Casa',
-        icon: 'shopping-bag',
-      },
-      date: '05/03/2022',
-    },
-    {
-      id: '4',
-      type: 'negative',
-      title: 'Aluguel do Apartamento',
-      amount: 'R$ 1.200,00',
-      category: {
-        name: 'Casa',
-        icon: 'shopping-bag',
-      },
-      date: '05/03/2022',
-    },
-    {
-      id: '5',
-      type: 'positive',
-      title: 'Aluguel da Bike',
-      amount: 'R$ 900,00',
-      category: {
-        name: 'Casa',
-        icon: 'shopping-bag',
-      },
-      date: '05/03/2022',
-    },
-    {
-      id: '6',
-      type: 'negative',
-      title: 'Aluguel do Apartamento',
-      amount: 'R$ 1.200,00',
-      category: {
-        name: 'Casa',
-        icon: 'shopping-bag',
-      },
-      date: '05/03/2022',
-    },
-  ];
+  const [data, setData] = useState<DataListProps[]>();
 
+  async function loadTransactions() {
+    const dataKey = '@gofinances:transactions';
+
+    const response = await AsyncStorage.getItem(dataKey);
+    const transactions = response ? JSON.parse(response) : [];
+
+    const transactionsFormatted: DataListProps[] = transactions.map(
+      (item: DataListProps) => {
+        const amount = Number(item.amount).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        });
+
+        const date = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit',
+        }).format(new Date(item.date));
+
+        return {
+          id: item.id,
+          name: item.name,
+          amount,
+          type: item.type,
+          category: item.category,
+          date,
+        };
+      }
+    );
+
+    setData(transactionsFormatted);
+  }
+
+  useEffect(() => {
+    loadTransactions();
+  }, []);
   return (
     <Container>
       <Header>
