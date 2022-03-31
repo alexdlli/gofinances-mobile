@@ -120,7 +120,7 @@ export function Dashboard() {
       'negative'
     );
 
-    const totalInterval = `01 a ${lastTransactionsExpansive}`;
+    const totalInterval = `${lastTransactionsEntries} a ${lastTransactionsExpansive}`;
 
     const total = entriesTotal - expensiveTotal;
 
