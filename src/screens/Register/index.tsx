@@ -3,6 +3,8 @@ import { Keyboard, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useForm } from 'react-hook-form';
 
 import { InputForm } from '../../components/Form/InputForm';
@@ -29,6 +31,7 @@ interface FormData {
 const scheme = Yup.object().shape({
   name: Yup.string().required('Nome é obrigatório'),
   amount: Yup.number()
+    .required('Valor é obrigatório')
     .typeError('Informe um valor numerico')
     .positive('O valor não pode ser negativo'),
 });
@@ -50,6 +53,8 @@ export function Register() {
     resolver: yupResolver(scheme),
   });
 
+  const dataKey = '@gofinances:transactions';
+
   function handleCloseSelectCategoryModal() {
     setCategoryModalOpen(false);
   }
@@ -62,7 +67,7 @@ export function Register() {
     setTransactionType(type);
   }
 
-  function handleRegister(form: Partial<FormData>) {
+  async function handleRegister(form: Partial<FormData>) {
     if (!transactionType) return Alert.alert('Selecione o tipo da transação');
 
     if (category.key === 'category')
@@ -74,6 +79,13 @@ export function Register() {
       transactionType,
       category: category.key,
     };
+
+    try {
+      await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Não foi possível salvar');
+    }
   }
 
   return (
