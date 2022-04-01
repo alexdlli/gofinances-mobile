@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HistoryCard } from '../../components/HistoryCard';
 import { VictoryPie } from 'victory-native';
@@ -21,6 +21,9 @@ import {
 } from './styles';
 import { categories } from '../../utils/categories';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { ActivityIndicator } from 'react-native';
+import { LoadContainer } from '../Dashboard/styles';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface TransactionData {
   id: string;
@@ -41,6 +44,7 @@ interface CategoryDate {
 }
 
 export function Resume() {
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryDate[]>(
     []
@@ -49,6 +53,8 @@ export function Resume() {
   const theme = useTheme();
 
   function handleDateChange(action: 'next' | 'previous') {
+    setIsLoading(true);
+
     if (action === 'next') {
       setSelectedDate(addMonths(selectedDate, 1));
     } else {
@@ -108,63 +114,77 @@ export function Resume() {
     });
 
     setTotalByCategories(totalByCategory);
+    setIsLoading(false);
   }
 
   useEffect(() => {
     LoadData();
   }, [selectedDate]);
 
+  useFocusEffect(
+    useCallback(() => {
+      LoadData();
+    }, [])
+  );
+
   return (
     <Container>
       <Header>
         <Title>Resumo por categoria</Title>
       </Header>
+      {isLoading ? (
+        <LoadContainer>
+          <ActivityIndicator color={theme.colors.primary} size='large' />
+        </LoadContainer>
+      ) : (
+        <Content
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingBottom: useBottomTabBarHeight(),
+          }}
+        >
+          <MouthSelect>
+            <MouthSelectButton onPress={() => handleDateChange('previous')}>
+              <MouthSelectIcon name='chevron-left' />
+            </MouthSelectButton>
 
-      <Content
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 24,
-          paddingBottom: useBottomTabBarHeight(),
-        }}
-      >
-        <MouthSelect>
-          <MouthSelectButton onPress={() => handleDateChange('previous')}>
-            <MouthSelectIcon name='chevron-left' />
-          </MouthSelectButton>
+            <Mouth>
+              {format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}
+            </Mouth>
 
-          <Mouth>{format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}</Mouth>
+            <MouthSelectButton onPress={() => handleDateChange('next')}>
+              <MouthSelectIcon name='chevron-right' />
+            </MouthSelectButton>
+          </MouthSelect>
 
-          <MouthSelectButton onPress={() => handleDateChange('next')}>
-            <MouthSelectIcon name='chevron-right' />
-          </MouthSelectButton>
-        </MouthSelect>
+          <ChartContainer>
+            <VictoryPie
+              data={totalByCategories}
+              colorScale={totalByCategories.map((category) => category.color)}
+              style={{
+                labels: {
+                  fontSize: RFValue(18),
+                  fontWeight: 'bold',
+                  fill: theme.colors.shape,
+                },
+              }}
+              labelRadius={50}
+              x='percent'
+              y='total'
+            />
+          </ChartContainer>
 
-        <ChartContainer>
-          <VictoryPie
-            data={totalByCategories}
-            colorScale={totalByCategories.map((category) => category.color)}
-            style={{
-              labels: {
-                fontSize: RFValue(18),
-                fontWeight: 'bold',
-                fill: theme.colors.shape,
-              },
-            }}
-            labelRadius={50}
-            x='percent'
-            y='total'
-          />
-        </ChartContainer>
-
-        {totalByCategories.map((category) => (
-          <HistoryCard
-            key={category.key}
-            title={category.name}
-            amount={category.totalFormatted}
-            color={category.color}
-          />
-        ))}
-      </Content>
+          {totalByCategories.map((category) => (
+            <HistoryCard
+              key={category.key}
+              title={category.name}
+              amount={category.totalFormatted}
+              color={category.color}
+            />
+          ))}
+        </Content>
+      )}
     </Container>
   );
 }
