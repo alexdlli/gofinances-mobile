@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HistoryCard } from '../../components/HistoryCard';
 import { VictoryPie } from 'victory-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { addMonths, subMonths, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { useTheme } from 'styled-components';
 
@@ -39,11 +41,20 @@ interface CategoryDate {
 }
 
 export function Resume() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryDate[]>(
     []
   );
 
   const theme = useTheme();
+
+  function handleDateChange(action: 'next' | 'previous') {
+    if (action === 'next') {
+      setSelectedDate(addMonths(selectedDate, 1));
+    } else {
+      setSelectedDate(subMonths(selectedDate, 1));
+    }
+  }
 
   async function LoadData() {
     const dataKey = '@gofinances:transactions';
@@ -51,7 +62,10 @@ export function Resume() {
     const responseFormatted = response ? JSON.parse(response) : [];
 
     const expensives = responseFormatted.filter(
-      (expensive: TransactionData) => expensive.type === 'negative'
+      (expensive: TransactionData) =>
+        expensive.type === 'negative' &&
+        new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
+        new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
     );
 
     const expensivesTotal = expensives.reduce(
@@ -98,7 +112,7 @@ export function Resume() {
 
   useEffect(() => {
     LoadData();
-  }, []);
+  }, [selectedDate]);
 
   return (
     <Container>
@@ -114,13 +128,13 @@ export function Resume() {
         }}
       >
         <MouthSelect>
-          <MouthSelectButton>
+          <MouthSelectButton onPress={() => handleDateChange('previous')}>
             <MouthSelectIcon name='chevron-left' />
           </MouthSelectButton>
 
-          <Mouth>Março</Mouth>
+          <Mouth>{format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}</Mouth>
 
-          <MouthSelectButton>
+          <MouthSelectButton onPress={() => handleDateChange('next')}>
             <MouthSelectIcon name='chevron-right' />
           </MouthSelectButton>
         </MouthSelect>
