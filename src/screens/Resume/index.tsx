@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { HistoryCard } from '../../components/HistoryCard';
-import { VictoryPie } from 'victory-native';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { addMonths, subMonths, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import React, { useCallback, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { HistoryCard } from "../../components/HistoryCard";
+import { VictoryPie } from "victory-native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { addMonths, subMonths, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-import { useTheme } from 'styled-components';
+import { useTheme } from "styled-components";
 
 import {
   Container,
@@ -18,16 +18,16 @@ import {
   MouthSelectButton,
   MouthSelectIcon,
   Mouth,
-} from './styles';
-import { categories } from '../../utils/categories';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { ActivityIndicator } from 'react-native';
-import { LoadContainer } from '../Dashboard/styles';
-import { useFocusEffect } from '@react-navigation/native';
+} from "./styles";
+import { categories } from "../../utils/categories";
+import { RFValue } from "react-native-responsive-fontsize";
+import { ActivityIndicator } from "react-native";
+import { LoadContainer } from "../Dashboard/styles";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface TransactionData {
   id: string;
-  type: 'positive' | 'negative';
+  type: "positive" | "negative";
   name: string;
   amount: string;
   category: string;
@@ -52,8 +52,8 @@ export function Resume() {
 
   const theme = useTheme();
 
-  function handleDateChange(action: 'next' | 'previous') {
-    if (action === 'next') {
+  function handleDateChange(action: "next" | "previous") {
+    if (action === "next") {
       setSelectedDate(addMonths(selectedDate, 1));
     } else {
       setSelectedDate(subMonths(selectedDate, 1));
@@ -63,13 +63,13 @@ export function Resume() {
   async function LoadData() {
     setIsLoading(true);
 
-    const dataKey = '@gofinances:transactions';
+    const dataKey = "@gofinances:transactions";
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted = response ? JSON.parse(response) : [];
 
     const expensives = responseFormatted.filter(
       (expensive: TransactionData) =>
-        expensive.type === 'negative' &&
+        expensive.type === "negative" &&
         new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
         new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
     );
@@ -93,9 +93,9 @@ export function Resume() {
       });
 
       if (categorySum > 0) {
-        const totalFormatted = categorySum.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        const totalFormatted = categorySum.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
 
         const percent = `${((categorySum / expensivesTotal) * 100).toFixed(
@@ -130,7 +130,7 @@ export function Resume() {
       </Header>
       {isLoading ? (
         <LoadContainer>
-          <ActivityIndicator color={theme.colors.primary} size='large' />
+          <ActivityIndicator color={theme.colors.primary} size="large" />
         </LoadContainer>
       ) : (
         <Content
@@ -141,16 +141,16 @@ export function Resume() {
           }}
         >
           <MouthSelect>
-            <MouthSelectButton onPress={() => handleDateChange('previous')}>
-              <MouthSelectIcon name='chevron-left' />
+            <MouthSelectButton onPress={() => handleDateChange("previous")}>
+              <MouthSelectIcon name="chevron-left" />
             </MouthSelectButton>
 
             <Mouth>
-              {format(selectedDate, 'MMMM, yyyy', { locale: ptBR })}
+              {format(selectedDate, "MMMM, yyyy", { locale: ptBR })}
             </Mouth>
 
-            <MouthSelectButton onPress={() => handleDateChange('next')}>
-              <MouthSelectIcon name='chevron-right' />
+            <MouthSelectButton onPress={() => handleDateChange("next")}>
+              <MouthSelectIcon name="chevron-right" />
             </MouthSelectButton>
           </MouthSelect>
 
@@ -161,13 +161,13 @@ export function Resume() {
               style={{
                 labels: {
                   fontSize: RFValue(18),
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                   fill: theme.colors.shape,
                 },
               }}
               labelRadius={50}
-              x='percent'
-              y='total'
+              x="percent"
+              y="total"
             />
           </ChartContainer>
 
