@@ -6,7 +6,17 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import { useTheme } from 'styled-components';
 
-import { Container, Header, Title, Content, ChartContainer } from './styles';
+import {
+  Container,
+  Header,
+  Title,
+  Content,
+  ChartContainer,
+  MouthSelect,
+  MouthSelectButton,
+  MouthSelectIcon,
+  Mouth,
+} from './styles';
 import { categories } from '../../utils/categories';
 import { RFValue } from 'react-native-responsive-fontsize';
 
@@ -103,6 +113,18 @@ export function Resume() {
           paddingBottom: useBottomTabBarHeight(),
         }}
       >
+        <MouthSelect>
+          <MouthSelectButton>
+            <MouthSelectIcon name='chevron-left' />
+          </MouthSelectButton>
+
+          <Mouth>Março</Mouth>
+
+          <MouthSelectButton>
+            <MouthSelectIcon name='chevron-right' />
+          </MouthSelectButton>
+        </MouthSelect>
+
         <ChartContainer>
           <VictoryPie
             data={totalByCategories}
