@@ -31,7 +31,6 @@ export function SignIn() {
     } catch (error) {
       console.log(error);
       Alert.alert("Erro ao fazer login", "Tente novamente mais tarde");
-    } finally {
       setIsLoading(false);
     }
   }
@@ -43,7 +42,6 @@ export function SignIn() {
     } catch (error) {
       console.log(error);
       Alert.alert("Erro ao fazer login", "Tente novamente mais tarde");
-    } finally {
       setIsLoading(false);
     }
   }
