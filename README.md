@@ -4,7 +4,7 @@
 
 ### Application Details
 
-![Capa](https://github.com/Alex-dll/gofinances-mobile/blob/main/public/Capa.png?raw=true)
+![Capa](https://github.com/Alex-dll/gofinances-mobile/blob/master/public/Capa.png?raw=true)
 
 #### Behaviours
 
