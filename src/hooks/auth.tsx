@@ -31,13 +31,10 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   async function singInWhitGoogle() {
     try {
-      const CLIENT_ID =
-        "311860846713-nuv94934cfo6ug4rs9qj06big3mvk9ah.apps.googleusercontent.com";
-      const REDIRECT_URI = "https://auth.expo.io/@alex-dll/gofinances";
       const RESPONSE_TYPE = "token";
       const SCOPE = encodeURI("profile email");
 
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
 
       const { type, params } = (await AuthSession.startAsync({
         authUrl,
@@ -57,8 +54,6 @@ function AuthProvider({ children }: AuthProviderProps) {
           photo: userInfo.picture,
         });
       }
-
-      // console.log(response);
     } catch (error: any) {
       throw new Error(error);
     }
