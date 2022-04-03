@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import AppleSvg from "../../assets/apple.svg";
@@ -20,7 +21,16 @@ import {
 } from "./styles";
 
 export function SignIn() {
-  const { user } = useAuth();
+  const { singInWhitGoogle } = useAuth();
+
+  async function handleSingInWithGoogle() {
+    try {
+      await singInWhitGoogle();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro ao fazer login", "Tente novamente mais tarde");
+    }
+  }
 
   return (
     <Container>
@@ -40,7 +50,11 @@ export function SignIn() {
 
       <Footer>
         <FooterWrapper>
-          <SignInSocialButton title="Entrar com Google" svg={GoogleSvg} />
+          <SignInSocialButton
+            title="Entrar com Google"
+            svg={GoogleSvg}
+            onPress={handleSingInWithGoogle}
+          />
 
           <SignInSocialButton title="Entrar com Apple" svg={AppleSvg} />
         </FooterWrapper>
