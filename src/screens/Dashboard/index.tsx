@@ -194,25 +194,19 @@ export function Dashboard() {
               type="up"
               title="Entradas"
               amount={highLightData.entries.amount}
-              lastTransaction={
-                highLightData ? highLightData.entries.lastTransaction : ""
-              }
+              lastTransaction={highLightData.entries.lastTransaction}
             />
             <HighlightCard
               type="down"
               title="Saídas"
               amount={highLightData.expensives.amount}
-              lastTransaction={
-                highLightData ? highLightData.expensives.lastTransaction : ""
-              }
+              lastTransaction={highLightData.expensives.lastTransaction}
             />
             <HighlightCard
               type="total"
               title="Total"
               amount={highLightData.total.amount}
-              lastTransaction={
-                highLightData ? highLightData.total.lastTransaction : ""
-              }
+              lastTransaction={highLightData.total.lastTransaction}
             />
           </HighlightCards>
 

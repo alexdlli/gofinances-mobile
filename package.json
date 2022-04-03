@@ -15,6 +15,7 @@
     "@react-native-async-storage/async-storage": "^1.13.0",
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/native": "^6.0.8",
+    "@react-navigation/stack": "^6.2.1",
     "@types/react-native-dotenv": "^0.2.0",
     "date-fns": "^2.28.0",
     "expo": "~41.0.1",

@@ -1,4 +1,10 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import * as AuthSession from "expo-auth-session";
 import * as AppleAuthentication from "expo-apple-authentication";
@@ -30,8 +36,8 @@ interface AuthorizationResponse {
 const AuthContext = createContext({} as IAuthContextData);
 
 function AuthProvider({ children }: AuthProviderProps) {
-  const [userLogged, setUserLogged] = useState(false);
   const [user, setUser] = useState<User>({} as User);
+  const [userStorageLoading, setUserStorageLoading] = useState(true);
 
   async function singInWhitGoogle() {
     try {
@@ -52,13 +58,14 @@ function AuthProvider({ children }: AuthProviderProps) {
         const userInfo = await response.json();
 
         const userLogged = {
-          id: String(userInfo.user.id),
-          email: userInfo.user.email!,
-          name: userInfo.user.name!,
-          photo: userInfo.user.photoUrl!,
+          id: userInfo.id,
+          email: userInfo.email,
+          name: userInfo.given_name,
+          photo: userInfo.picture,
         };
 
         setUser(userLogged);
+
         await AsyncStorage.setItem(
           "@gofinances:user",
           JSON.stringify(userLogged)
@@ -96,6 +103,22 @@ function AuthProvider({ children }: AuthProviderProps) {
       throw new Error(error);
     }
   }
+
+  useEffect(() => {
+    async function loadUserStorageData() {
+      const userStorage = await AsyncStorage.getItem("@gofinances:user");
+
+      if (userStorage) {
+        const user = JSON.parse(userStorage) as User;
+
+        setUser(user);
+      }
+
+      setUserStorageLoading(false);
+    }
+
+    loadUserStorageData();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, singInWhitGoogle, singInWithApple }}>
