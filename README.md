@@ -1,6 +1,6 @@
-# Welcome to to.do
+# Welcome to GoFinances
 
-- Your favorite app to your tasks
+- Your favorite Finance Management APP
 
 ### Application Details
 
