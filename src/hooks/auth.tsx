@@ -1,6 +1,8 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
 import * as AuthSession from "expo-auth-session";
+import * as AppleAuthentication from "expo-apple-authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -15,6 +17,7 @@ interface User {
 interface IAuthContextData {
   user: User;
   singInWhitGoogle(): Promise<void>;
+  singInWithApple(): Promise<void>;
 }
 
 interface AuthorizationResponse {
@@ -27,6 +30,7 @@ interface AuthorizationResponse {
 const AuthContext = createContext({} as IAuthContextData);
 
 function AuthProvider({ children }: AuthProviderProps) {
+  const [userLogged, setUserLogged] = useState(false);
   const [user, setUser] = useState<User>({} as User);
 
   async function singInWhitGoogle() {
@@ -47,12 +51,46 @@ function AuthProvider({ children }: AuthProviderProps) {
 
         const userInfo = await response.json();
 
-        setUser({
-          id: userInfo.id,
-          email: userInfo.email,
-          name: userInfo.given_name,
-          photo: userInfo.picture,
-        });
+        const userLogged = {
+          id: String(userInfo.user.id),
+          email: userInfo.user.email!,
+          name: userInfo.user.name!,
+          photo: userInfo.user.photoUrl!,
+        };
+
+        setUser(userLogged);
+        await AsyncStorage.setItem(
+          "@gofinances:user",
+          JSON.stringify(userLogged)
+        );
+      }
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  async function singInWithApple() {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential) {
+        const userLogged = {
+          id: String(credential.user),
+          email: credential.email!,
+          name: credential.fullName!.givenName!,
+          photo: undefined,
+        };
+
+        setUser(userLogged);
+        await AsyncStorage.setItem(
+          "@gofinances:user",
+          JSON.stringify(userLogged)
+        );
       }
     } catch (error: any) {
       throw new Error(error);
@@ -60,7 +98,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, singInWhitGoogle }}>
+    <AuthContext.Provider value={{ user, singInWhitGoogle, singInWithApple }}>
       {children}
     </AuthContext.Provider>
   );
