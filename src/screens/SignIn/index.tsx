@@ -1,5 +1,5 @@
-import React from "react";
-import { Alert } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import AppleSvg from "../../assets/apple.svg";
@@ -21,23 +21,30 @@ import {
 } from "./styles";
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
   const { singInWhitGoogle, singInWithApple } = useAuth();
 
   async function handleSingInWithGoogle() {
     try {
-      await singInWhitGoogle();
+      setIsLoading(true);
+      return await singInWhitGoogle();
     } catch (error) {
       console.log(error);
       Alert.alert("Erro ao fazer login", "Tente novamente mais tarde");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function handleSingInWithApple() {
     try {
-      await singInWithApple();
+      setIsLoading(true);
+      return await singInWithApple();
     } catch (error) {
       console.log(error);
       Alert.alert("Erro ao fazer login", "Tente novamente mais tarde");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -71,6 +78,14 @@ export function SignIn() {
             onPress={handleSingInWithApple}
           />
         </FooterWrapper>
+
+        {isLoading && (
+          <ActivityIndicator
+            color="White"
+            size="large"
+            style={{ marginTop: 18 }}
+          />
+        )}
       </Footer>
     </Container>
   );
